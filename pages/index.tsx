@@ -1,9 +1,10 @@
-import Link from 'next/link';
-import Image from 'next/image';
 import { useState, useEffect, useMemo } from 'react';
 import { useTable, Column } from 'react-table';
 import { useOctokit } from '@/hooks/useOctokit';
 import { Layout } from '@/components/Layout';
+import { Link } from '@/components/Link';
+import { AvatarIcon } from '@/components/AvatarIcon';
+import { formatDate } from '@/lib/format-date';
 
 type Data = {
   number: number;
@@ -51,7 +52,7 @@ const Home = () => {
           avatarUrl,
           pageUrl,
           state,
-          createdAt,
+          createdAt: formatDate(createdAt),
         })
       );
 
@@ -69,7 +70,7 @@ const Home = () => {
       {
         Header: 'Author',
         accessor: 'author' as const,
-        Cell: ({ row }) => <Image src={row.values.avatarUrl} alt={row.values.author} width={30} height={30} />,
+        Cell: ({ row }) => <AvatarIcon src={row.values.avatarUrl} alt={row.values.author} />,
       },
       {
         Header: 'Avatar URL',
@@ -78,11 +79,7 @@ const Home = () => {
       {
         Header: 'Title',
         accessor: 'title' as const,
-        Cell: ({ row }) => (
-          <Link href={`/pulls/${row.values.number}/reviews`}>
-            <a>{row.values.title}</a>
-          </Link>
-        ),
+        Cell: ({ row }) => <Link href={`/pulls/${row.values.number}/reviews`}>{row.values.title}</Link>,
       },
       {
         Header: 'State',

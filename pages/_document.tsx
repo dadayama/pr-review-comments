@@ -1,4 +1,5 @@
 import NextDocument, { Html, Head, Main, NextScript, DocumentContext } from 'next/document';
+import { Global, css } from '@emotion/react';
 
 class Document extends NextDocument {
   static async getInitialProps(ctx: DocumentContext) {
@@ -14,6 +15,14 @@ class Document extends NextDocument {
           <Main />
           <NextScript />
         </body>
+        <Global
+          styles={css`
+            * {
+              font-size: 14px;
+              font-family: sans-serif;
+            }
+          `}
+        />
       </Html>
     );
   }

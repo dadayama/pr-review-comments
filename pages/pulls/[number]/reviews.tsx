@@ -1,10 +1,11 @@
-import { useRouter } from 'next/router';
-import Link from 'next/link';
-import Image from 'next/image';
 import { useState, useEffect, useMemo } from 'react';
+import { useRouter } from 'next/router';
 import { useTable, Column } from 'react-table';
 import { useOctokit } from '@/hooks/useOctokit';
 import { Layout } from '@/components/Layout';
+import { Link } from '@/components/Link';
+import { AvatarIcon } from '@/components/AvatarIcon';
+import { formatDate } from '@/lib/format-date';
 
 type Data = {
   author: string;
@@ -65,11 +66,11 @@ const Reviews = () => {
             }) => ({
               author,
               avatarUrl,
-              file,
-              diff,
+              file: file.split('/').reduce((p, c, i) => `${p}\n${' '.repeat(i * 2)}└ ${c}`),
+              diff: diff.replace(/@@.+?@@/, ''),
               comment,
               pageUrl,
-              commentedAt,
+              commentedAt: formatDate(commentedAt),
             })
           );
 
@@ -85,7 +86,7 @@ const Reviews = () => {
       {
         Header: 'Author',
         accessor: 'author' as const,
-        Cell: ({ row }) => <Image src={row.values.avatarUrl} alt={row.values.author} width={30} height={30} />,
+        Cell: ({ row }) => <AvatarIcon src={row.values.avatarUrl} alt={row.values.author} />,
       },
       {
         Header: 'Avatar URL',
@@ -94,6 +95,7 @@ const Reviews = () => {
       {
         Header: 'File',
         accessor: 'file' as const,
+        Cell: ({ row }) => <pre>{row.values.file}</pre>,
       },
       {
         Header: 'Diff',
@@ -103,13 +105,7 @@ const Reviews = () => {
       {
         Header: 'Comment',
         accessor: 'comment' as const,
-        Cell: ({ row }) => (
-          <Link href={row.values.pageUrl ?? ''}>
-            <a target="_blank" rel="noopener noreferrer">
-              {row.values.comment}
-            </a>
-          </Link>
-        ),
+        Cell: ({ row }) => <pre>{row.values.comment}</pre>,
       },
       {
         Header: 'Commented At',
@@ -118,6 +114,11 @@ const Reviews = () => {
       {
         Header: 'Page URL',
         accessor: 'pageUrl' as const,
+        Cell: ({ row }) => (
+          <Link href={row.values.pageUrl ?? ''} blank>
+            URL
+          </Link>
+        ),
       },
     ],
     []
@@ -127,7 +128,7 @@ const Reviews = () => {
     columns,
     data,
     initialState: {
-      hiddenColumns: ['avatarUrl', 'pageUrl'],
+      hiddenColumns: ['avatarUrl'],
     },
   });
 
